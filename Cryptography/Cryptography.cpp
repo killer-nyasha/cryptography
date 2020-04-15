@@ -11,11 +11,13 @@ int wmain()
     _setmode(_fileno(stdout), _O_U16TEXT);
     _setmode(_fileno(stdin), _O_U16TEXT);
 
-    TableAlphabet alphabet(33);
+    TableAlphabet alphabet(66);
     
-    for (size_t i = 0; i < alphabet.length(); i++)
-        //alphabet.table[i] = 'a' + i;
-        alphabet.table[i] = L'а' + i;
+    for (size_t i = 0; i < 33; i++)
+    {
+        alphabet.table[i] = L'А' + i;  
+        alphabet.table[i + 33] = L'а' + i;
+    }
 
     alphabet.makeReverseTable();
 
@@ -34,32 +36,59 @@ int wmain()
     key.size = 0;
 
 
-    std::wcin.getline(keystr, 1024);
-    key.size = wcslen(keystr);
-
     while (true)
     {
+        std::wcout << "A - affine, V - vigenere\n";
+        
         std::wcin.getline(str, 1024);
-        input.size = wcslen(str);
+        
 
-        Buffer encrypted = vigenere.encrypt(input, key);
-        std::wcout << encrypted.data << "\n";
+        switch (str[0])
+        {
+            case L'A':
+            {       
+                std::wcout << "please enter some text\n";
 
-        Buffer decrypted = vigenere.decrypt(encrypted, key);
-        std::wcout << decrypted.data << "\n";
+                //std::wcin.ignore();
+                std::wcin.getline(str, 1024);
+                input.size = wcslen(str);
+               // std::wcin.ignore();
+
+                Buffer encrypted = affine.encrypt(input, 19, 7);
+                std::wcout.write(encrypted.data, encrypted.size);
+                std::wcout << "\n";
+
+                Buffer decrypted = affine.decrypt(encrypted, 19, 7);
+                std::wcout.write(decrypted.data, decrypted.size);
+                std::wcout << "\n";
+                break;
+            }
+            case 'V':
+            {
+                std::wcout << "please enter a key\n";
+
+                //std::wcin.ignore();
+                std::wcin.getline(keystr, 1024);
+                key.size = wcslen(keystr);
+               // std::wcin.ignore();
+
+                std::wcout << "please enter some text\n";
+
+                std::wcin.getline(str, 1024);
+                input.size = wcslen(str);
+
+                Buffer encrypted = vigenere.encrypt(input, key);
+                std::wcout.write(encrypted.data, encrypted.size);
+                std::wcout << "\n";
+
+                Buffer decrypted = vigenere.decrypt(encrypted, key);
+                std::wcout.write(decrypted.data, decrypted.size);
+                std::wcout << "\n";
+                break;
+            }
+        }
+
     }
-
-    //while (true)
-    //{
-    //    std::wcin.getline(str, 1024);
-    //    input.size = wcslen(str);
-
-    //    Buffer encrypted = affine.encrypt(input, 19, 7);
-    //    std::wcout << encrypted.data << "\n";
-
-    //    Buffer decrypted = affine.decrypt(encrypted, 19, 7);
-    //    std::wcout << decrypted.data << "\n";
-    //}
 
 
 }
